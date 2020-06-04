@@ -8,7 +8,7 @@ const bodyParser = require('body-parser')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var create_tables = require('./database/create_tables');
 var app = express();
 
 // view engine setup
@@ -25,6 +25,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(passport.initialize());
+
+// uncomment following line to create tables
+// create_tables.createAllTables();
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

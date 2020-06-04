@@ -2,29 +2,21 @@ const Sequelize = require('sequelize');
 const db = require('../database/db.js');
 
 module.exports = db.sequelize.define(
-  'users', //users - table name
+  'review_store',
   {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
-      // autoIncrement: true,
-      allowNull: false,
-      unique: true
+      autoIncrement: true,
+      min: 1
     },
-    name: {
+    status: {
       type: Sequelize.STRING,
       defaultValue: ''
     },
-    email: {
+    comments: {
       type: Sequelize.STRING,
-      isEmail: true,
-      allowNull: false,
-      unique: true
-    },
-    hashedPassword: {
-      type: Sequelize.STRING(64),
-      is: /^[0-9a-f]{64}$/i,
-      allowNull: false
+      defaultValue: ''
     }
   },
   {

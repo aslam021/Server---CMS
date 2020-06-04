@@ -2,12 +2,11 @@ const Sequelize = require('sequelize');
 const db = require('../database/db.js');
 
 module.exports = db.sequelize.define(
-  'users', //users - table name
+  'country',
   {
-    id: {
-      type: Sequelize.INTEGER,
+    code: {
+      type: Sequelize.STRING,
       primaryKey: true,
-      // autoIncrement: true,
       allowNull: false,
       unique: true
     },
@@ -15,16 +14,9 @@ module.exports = db.sequelize.define(
       type: Sequelize.STRING,
       defaultValue: ''
     },
-    email: {
+    flag: {
       type: Sequelize.STRING,
-      isEmail: true,
-      allowNull: false,
-      unique: true
-    },
-    hashedPassword: {
-      type: Sequelize.STRING(64),
-      is: /^[0-9a-f]{64}$/i,
-      allowNull: false
+      defaultValue: ''
     }
   },
   {
