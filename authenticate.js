@@ -22,7 +22,7 @@ passport.use(new JwtStrategy(opts,
 
         User.findOne({
             where: {
-              username: jwt_payload._id
+              email: jwt_payload._email
             }
           })
         .then(user => {

@@ -11,43 +11,37 @@ router.use(bodyParser.json());
 router.post('/signup', (req, res, next) => {
   
   const userData = {
-    username: req.body.username,
-    password: req.body.password,
+    id: 1,
+    name: req.body.name,
+    email: req.body.email,
+    hashedPassword: req.body.password,
   }
 
   User.findOne({
     where: {
-      username: userData.username
+      email: userData.email
     }
   })
   .then(user=>{
     if (!user) {
-      // bcrypt.hash(req.body.password, 10, (err, hash) => {
-      //   userData.password = hash
-      //   User.create(userData)
-      //     .then(user => {
-      //       res.json({ status: user.email + 'Registered!' })
-      //     })
-      //     .catch(err => {
-      //       res.send('error: ' + err)
-      //     })
-      // })
 
       User.create(userData)
       .then(user => {
 
-        let token = authenticate.getToken({_id: user.username});
+        let token = authenticate.getToken({_email: user.email});
 
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.json({status: user.username + 'Registered!', token: token});
+        res.json({success: true, token: token, status: 'You are successfully registerd!'});
       })
       .catch(err => {
         res.send('error: ' + err);
       })
 
     } else {
-      res.json({ error: 'User already exists' });
+      res.statusCode = 403;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({success: false, token: null, status: userData.email + ' has already registerd!'});
     }
   })
   .catch(err => {
@@ -59,24 +53,25 @@ router.post('/signup', (req, res, next) => {
 router.post('/login', (req, res) => {
   User.findOne({
     where: {
-      username: req.body.username
+      email: req.body.email
     }
   })
   .then(user => {
     if (user) {
-
-      // TODO: replace 'req.body.password === user.password' with 'bcrypt.compareSync(req.body.password, user.password')
-      if (req.body.password === user.password ) {
+      
+      if (req.body.password === user.hashedPassword ) {
   
-        let token = authenticate.getToken({_id: user.username});
-
+        let token = authenticate.getToken({_email: user.email});
+        
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json({success: true, token: token, status: 'You are successfully logged in!'});
       }
 
     } else {
-      res.status(400).json({ error: 'User does not exist' })
+      res.statusCode = 403;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({success: false, token: null, status: 'You are not registerd!'});
     }
   })
   .catch(err => {
