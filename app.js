@@ -9,6 +9,8 @@ const bodyParser = require('body-parser')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var create_tables = require('./database/create_tables');
+var articlesRouter = require('./routes/articlesRouter');
+
 var app = express();
 
 // view engine setup
@@ -31,6 +33,7 @@ app.use(passport.initialize());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/articles', articlesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
