@@ -1,9 +1,9 @@
 var express = require('express');
-var articlesRouter = express.Router();
+var router = express.Router();
 
 const authenticate = require('../authenticate');
 
-articlesRouter.route('/')
+router.route('/')
 .get((req, res, next)=>{
 
 })
@@ -66,4 +66,4 @@ router.route('/:articleId/comments/:commentId')
     
 });
 
-module.exports = articlesRouter;
+module.exports = router;

@@ -30,6 +30,19 @@ app.use(bodyParser.json());
 
 app.use(passport.initialize());
 
+//allowing requests coming from other servers/web pages to access this REST api
+app.use((req, res, next)=>{
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+
+  if(req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
+    return res.status(200).json({});
+  }
+  
+  next();
+});
+
 // uncomment following line to create tables
 // create_tables.createAllTables();
 
