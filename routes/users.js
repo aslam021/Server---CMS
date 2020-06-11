@@ -1,17 +1,19 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const bodyParser = require('body-parser');
 
-var User = require('../models/user');
-var authenticate = require('../authenticate');
+const User = require('../models/user');
+const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 router.use(bodyParser.json());
 
 
-router.post('/signup', (req, res, next) => {
-  
+router.route('/signup')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post(cors.corsWithOptions, (req, res, next) => {
   const userData = {
-    id: 1,
+    id: 2,
     name: req.body.name,
     email: req.body.email,
     hashedPassword: req.body.password,
@@ -50,28 +52,26 @@ router.post('/signup', (req, res, next) => {
 });
 
 
-router.post('/login', (req, res) => {
+router.route('/login')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post(cors.corsWithOptions, (req, res) => {
   User.findOne({
     where: {
       email: req.body.email
     }
   })
   .then(user => {
-    if (user) {
-      
-      if (req.body.password === user.hashedPassword ) {
-  
-        let token = authenticate.getToken({_email: user.email});
+    if (user && req.body.password === user.hashedPassword) {
+      let token = authenticate.getToken({_email: user.email});
         
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, token: token, status: 'You are successfully logged in!'});
-      }
-
-    } else {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({success: true, token: token, status: 'You are successfully logged in!'});
+    } 
+    else {
       res.statusCode = 403;
       res.setHeader('Content-Type', 'application/json');
-      res.json({success: false, token: null, status: 'You are not registerd!'});
+      res.json({success: false, token: null, status: 'Email or password invalid!'});
     }
   })
   .catch(err => {
@@ -80,8 +80,10 @@ router.post('/login', (req, res) => {
 });
 
 
-router.get('/logout', (req, res, next)=>{
-  res.statusCode = 500;
+router.route('/logout')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, (req, res, next)=>{
+  res.statusCode = 422;
   res.setHeader('Content-Type', 'application/json');
   res.json({status: 'remove the token from local storage of the client'});
 });
