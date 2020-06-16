@@ -5,6 +5,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 const config = require('./config');
 const db = require('./database/db');
+const { NotExtended } = require('http-errors');
 
 exports.getToken = function(user) {
     return jwt.sign(user, config.secretKey,
@@ -58,3 +59,14 @@ passport.use(new JwtStrategy(opts,
 ));
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});
+
+exports.varifyAdmin = (req, res, next) => {
+  // if(req.user.admin){
+    next();
+  // }
+  // else{
+  //   var err = new Error("You are not an admin to perform this operation!");
+  //   err.status = 403;
+  //   return next(err);
+  // }
+};
