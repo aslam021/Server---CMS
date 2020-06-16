@@ -12,6 +12,7 @@ var create_tables = require('./database/create_tables');
 var articlesRouter = require('./routes/articlesRouter');
 var speakersRouter = require('./routes/speakersRouter');
 var agendaRouter = require('./routes/agenda');
+const test = require('./routes/test');
 
 var app = express();
 
@@ -38,6 +39,7 @@ app.use('/users', usersRouter);
 app.use('/articles', articlesRouter);
 app.use('/speakers', speakersRouter);
 app.use('/agenda', agendaRouter);
+app.use('/test', test);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -4,7 +4,7 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 const config = require('./config');
-const User = require('./models/user');
+const db = require('./database/db');
 
 exports.getToken = function(user) {
     return jwt.sign(user, config.secretKey,
@@ -17,25 +17,44 @@ opts.secretOrKey = config.secretKey;
 
 //json web token passport strategy
 passport.use(new JwtStrategy(opts,
-    (jwt_payload, done) => { //done is a callback provided by passport. it will be used to load information to request message
-        console.log("JWT payload: ", jwt_payload);
+  (jwt_payload, done) => { //done is a callback provided by passport. it will be used to load information to request message
+      console.log("JWT payload: ", jwt_payload);
 
-        User.findOne({
-            where: {
-              email: jwt_payload._email
+      const query = "SELECT * FROM users WHERE email = '" + jwt_payload._email + "' LIMIT 1";
+
+      db.pool.getConnection((err, connection) => {
+
+        if (err) {
+          // not connected!
+          return done(err, false);
+        } 
+        else {
+          // Use the connection
+          connection.query(query, (error, results, fields) => {
+    
+            // When done with the connection, release it.
+            try {
+                connection.release();
+            } catch(err) {
+                console.log(err);
+                throw err;
             }
-          })
-        .then(user => {
-            if (user) {
-                return done(null, user);
+
+            //query execution error
+            if (error) {
+                return done(error, false);
             }
-            else {
-                return done(null, false);
+            //if any result is retrieved
+            else if(results.length > 0){
+              return done(null, results[0]);
             }
-        })
-        .catch(err => {
-            return done(err, false);
-        });
-    }));
+
+            //no results found
+            return done(null, false);
+          });
+        }
+      })
+  }
+));
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});

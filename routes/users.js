@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 
-const User = require('../models/user');
 const authenticate = require('../authenticate');
 const cors = require('./cors');
+const db = require('../database/db');
 
 router.use(bodyParser.json());
 
@@ -12,71 +12,59 @@ router.use(bodyParser.json());
 router.route('/signup')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .post(cors.corsWithOptions, (req, res, next) => {
+
   const userData = {
     id: 2,
     name: req.body.name,
     email: req.body.email,
-    hashedPassword: req.body.password,
+    password: req.body.password,
   }
 
-  User.findOne({
-    where: {
-      email: userData.email
-    }
-  })
-  .then(user=>{
-    if (!user) {
+  db.read("SELECT * FROM users WHERE email = '"+ userData.email+"'", req, res, (result)=>{
+    
+    res.statusCode = 400;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, token: null, status: userData.email + ' has already registerd!'});
+  
+  }, () => {
+      
+      db.create("INSERT INTO users VALUES ('"+userData.name+"','aslam','as','"+userData.email+"','a','AS','2020-06-11 09:40:37',NULL)",
+      req, res, (result)=>{
+      
+      const token = authenticate.getToken({_email: userData.email});
 
-      User.create(userData)
-      .then(user => {
-
-        let token = authenticate.getToken({_email: user.email});
-
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, token: token, status: 'You are successfully registerd!'});
-      })
-      .catch(err => {
-        res.send('error: ' + err);
-      })
-
-    } else {
-      res.statusCode = 403;
+      res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
-      res.json({success: false, token: null, status: userData.email + ' has already registerd!'});
-    }
-  })
-  .catch(err => {
-    res.send('error: ' + err);
-  })
+      res.json({success: true, token: token, status: 'You are successfully registerd!'});
+    
+    });
+  });
 });
 
 
 router.route('/login')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .post(cors.corsWithOptions, (req, res) => {
-  User.findOne({
-    where: {
-      email: req.body.email
-    }
-  })
-  .then(user => {
-    if (user && req.body.password === user.hashedPassword) {
-      let token = authenticate.getToken({_email: user.email});
-        
+
+  const email = req.body.email;
+  const password = req.body.password;
+
+  db.read("SELECT * FROM users WHERE email = '"+email+"' LIMIT 1" , req, res, (user) => {
+    console.log(user);
+    if(user.length == 0 || user[0].password === password ){
+
+      const token = authenticate.getToken({_email: user[0].email});
+
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.json({success: true, token: token, status: 'You are successfully logged in!'});
-    } 
-    else {
+    }
+    else{
       res.statusCode = 403;
       res.setHeader('Content-Type', 'application/json');
       res.json({success: false, token: null, status: 'Email or password invalid!'});
     }
-  })
-  .catch(err => {
-    res.status(400).json({ error: err })
-  })
+  });
 });
 
 
