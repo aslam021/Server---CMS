@@ -16,6 +16,7 @@ const test = require('./routes/test');
 const conference = require('./routes/conference');
 const coupens = require('./routes/coupon_codes');
 const tickets = require('./routes/tickets');
+const userData = require('./routes/userdata');
 
 var app = express();
 
@@ -46,6 +47,7 @@ app.use('/test', test);
 app.use('/conference', conference);
 app.use('/coupens', coupens);
 app.use('/tickets', tickets);
+app.use('./userdata', userData);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

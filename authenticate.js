@@ -98,3 +98,13 @@ exports.varifySuperAdmin = (req, res, next) => {
     return next(err);
   });
 };
+
+exports.isAdmin = () =>{
+  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND role_id='3' LIMIT 1`;
+
+  db.read(query, req, res, (result)=>{
+    return true;
+  }, ()=>{
+    return false;
+  }); 
+}

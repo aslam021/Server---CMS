@@ -19,17 +19,17 @@ router.route('/signup')
     email: req.body.email,
     password: req.body.password,
   }
+  const query = `SELECT * FROM users WHERE email = '${userData.email}' LIMIT 1`;
 
-  db.read("SELECT * FROM users WHERE email = '"+ userData.email+"'", req, res, (result)=>{
+  db.read(query, req, res, (result)=>{
     
     res.statusCode = 400;
     res.setHeader('Content-Type', 'application/json');
     res.json({success: false, token: null, status: userData.email + ' has already registerd!'});
   
   }, () => {
-      
-      db.create("INSERT INTO users VALUES ('"+userData.name+"','aslam','as','"+userData.email+"','a','AS','2020-06-11 09:40:37',NULL)",
-      req, res, (result)=>{
+      const query = `INSERT INTO users VALUES ('${userData.name}','aslam','as','${userData.email}','a','AS','2020-06-11 09:40:37',NULL)`;
+      db.create(query, req, res, (result)=>{
       
       const token = authenticate.getToken({_email: userData.email});
 
@@ -48,8 +48,9 @@ router.route('/login')
 
   const email = req.body.email;
   const password = req.body.password;
-
-  db.read("SELECT * FROM users WHERE email = '"+email+"' LIMIT 1" , req, res, (user) => {
+  const query = `SELECT * FROM users WHERE email = '${email}' LIMIT 1`;
+  
+  db.read(query , req, res, (user) => {
     console.log(user);
     if(user.length == 0 || user[0].password === password ){
 
