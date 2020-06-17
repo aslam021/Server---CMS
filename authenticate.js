@@ -35,15 +35,15 @@ passport.use(new JwtStrategy(opts,
     
             // When done with the connection, release it.
             try {
-                connection.release();
+              connection.release();
             } catch(err) {
-                console.log(err);
-                throw err;
+              console.log(err);
+              throw err;
             }
 
             //query execution error
             if (error) {
-                return done(error, false);
+              return done(error, false);
             }
             //if any result is retrieved
             else if(results.length > 0){
@@ -61,12 +61,40 @@ passport.use(new JwtStrategy(opts,
 exports.verifyUser = passport.authenticate('jwt', {session: false});
 
 exports.varifyAdmin = (req, res, next) => {
-  // if(req.user.admin){
+
+  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND role_id='3' LIMIT 1`;
+
+  db.read(query, req, res, (result)=>{
     next();
-  // }
-  // else{
-  //   var err = new Error("You are not an admin to perform this operation!");
-  //   err.status = 403;
-  //   return next(err);
-  // }
+  }, ()=>{
+    var err = new Error("You are not an admin to perform this operation!");
+    err.status = 403;
+    return next(err);
+  });
+};
+
+exports.varifyReviewer = (req, res, next) => {
+
+  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND role_id='2' LIMIT 1`;
+
+  db.read(query, req, res, (result)=>{
+    next();
+  }, ()=>{
+    var err = new Error("You are not a reviewer to perform this operation!");
+    err.status = 403;
+    return next(err);
+  });
+};
+
+exports.varifySuperAdmin = (req, res, next) => {
+
+  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND role_id='4' LIMIT 1`;
+
+  db.read(query, req, res, (result)=>{
+    next();
+  }, ()=>{
+    var err = new Error("You are not a super admin to perform this operation!");
+    err.status = 403;
+    return next(err);
+  });
 };

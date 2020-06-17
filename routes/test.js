@@ -10,7 +10,7 @@ router.use(bodyParser.json());
 
 router.route('/:tableName')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
-.get(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
+.get(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
   
   db.read("SELECT * FROM " + req.params.tableName , req, res, (result)=>{
     res.statusCode = 200;
@@ -21,3 +21,15 @@ router.route('/:tableName')
 });
 
 module.exports = router;
+
+// author 
+// adalberto09@example.net
+// $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+
+// admin
+// hschultz@example.org
+// $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+
+// reviewer
+// bayer.jerald@example.org
+// $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
