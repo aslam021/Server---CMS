@@ -13,14 +13,14 @@ router.route('/country')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     //admins can get any users data if they send required userId in the body
-    //normal users can get there data only
+    //normal users can get only there data
     let userId= req.user.id;
     if (authenticate.isAdmin && req.body.userId){
         userId = req.body.userId;
     }
     
-    //TODO query update
-    const query = `SELECT * FROM WHERE id='${userId}'`;
+    const query = `SELECT * FROM countries WHERE code = 
+    (SELECT country_code FROM users WHERE id='${userId}' LIMIT 1) LIMIT 1`;
     
     db.read(query, req, res, (country)=>{
         res.statusCode = 200;
@@ -28,35 +28,15 @@ router.route('/country')
         res.json({success: true, countryData: country, status: 'country data'});
     });
 })
-.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    const country = {
-        code: req.body.code,
-        name: req.body.name,
-        flag: req.body.flag
-    };
-    const query = `INSERT INTO countries(code, name, flag) 
-    VALUES(${country.code}, ${country.name}, ${country.flag})`;
-    
-    db.create(query, req, res, (result)=>{
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, countryData: result, status: 'inserted'});
-    });
+.post(cors.corsWithOptions, (req, res, next) => {
+    res.statusCode = 400;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, status: "use alldata/countries end point to add a new country"});
 })
-.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res, next) => {
-    const country = {
-        code: req.body.code,
-        name: req.body.name,
-        flag: req.body.flag
-    };
-    const query = `UPDATE countries SET name=${country.code}, flag=${country.flag} 
-    WHERE code='${country.code}'`;
-    
-    db.update(query, req, res, (result)=>{
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, countryData: result, status: `${country.flag} updated`});
-    });
+.put(cors.corsWithOptions, (req, res, next) => {
+    res.statusCode = 400;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, status: "use alldata/countries end point to update a country detail"});
 })
 .delete(cors.corsWithOptions, (req, res, next) => {
     res.statusCode = 403;
@@ -69,14 +49,14 @@ router.route('/role')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     //admins can get any users data if they send required userId in the body
-    //normal users can get there data only
+    //normal users can get only there data
     let userId= req.user.id;
     if (authenticate.isAdmin && req.body.userId){
         userId = req.body.userId;
     }
     
-    //TODO query update
-    const query = `SELECT * FROM usr roles WHERE id='${userId}'`;
+    const query = `SELECT * FROM roles WHERE id = 
+    (SELECT role_id FROM role_user WHERE id='${userId}' LIMIT 1) LIMIT 1`;
     
     db.read(query, req, res, (role)=>{
         res.statusCode = 200;
@@ -85,22 +65,22 @@ router.route('/role')
     });
 })
 .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    //TODO query update
     const query = `INSERT INTO role_user(user_id, role_id)
-    VALUES(${req.user.id}, 1)`;
+    VALUES(${req.user.id}, (SELECT id FROM roles WHERE name='Author' LIMIT 1))`;
     
     db.create(query, req, res, (role)=>{
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, userRoleData: role, status: 'inserted'});
+        res.json({success: true, role: role, status: 'role added'});
     });
 })
 .put(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res, next) => {
     const roleUser = {
         userId: req.body.userId,
-        roleId: req.body.roleId
+        role: req.body.role
     };
-    const query = `UPDATE role_user SET role_id=${roleUser.roleId} 
+    
+    const query = `UPDATE role_user SET role_id=(SELECT id FROM roles WHERE name='${roleUser.role}' LIMIT 1) 
     WHERE user_id='${roleUser.roleId}'`;
     
     db.update(query, req, res, (role)=>{
@@ -110,7 +90,6 @@ router.route('/role')
     });
 })
 .delete(cors.corsWithOptions, (req, res, next) => {
-    //TODO consider how to delete a role_id
     res.statusCode = 403;
     res.setHeader('Content-Type', 'application/json');
     res.json({success: false, userRoleData: null, status: 'cannot delete a user role'});
