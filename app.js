@@ -9,13 +9,13 @@ const bodyParser = require('body-parser')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var create_tables = require('./database/create_tables');
-var agendaRouter = require('./routes/agenda');
 const test = require('./routes/test');
 const conference = require('./routes/conference');
 const coupens = require('./routes/coupon_codes');
 const tickets = require('./routes/tickets');
 const userData = require('./routes/userdata');
 const allData = require('./routes/alldata');
+const uploadFile = require('./routes/uploadRouter');
 
 var app = express();
 
@@ -39,13 +39,13 @@ app.use(passport.initialize());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/agenda', agendaRouter);
 app.use('/test', test);
 app.use('/conference', conference);
 app.use('/coupens', coupens);
 app.use('/tickets', tickets);
 app.use('/userdata', userData);
 app.use('/alldata', allData);
+app.use('/uploadfile', uploadFile);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

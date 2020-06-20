@@ -8,6 +8,7 @@ const authenticate = require('../authenticate');
 
 router.use(bodyParser.json());
 
+// working with countries table
 router.route('/countries')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
@@ -42,7 +43,7 @@ router.route('/countries')
         flag: req.body.flag
     };
     const query = `UPDATE countries SET name=${country.code}, flag=${country.flag} 
-    WHERE code='${country.code}'`;
+    WHERE code='${country.code}' LIMIT 1`;
     
     db.update(query, req, res, (result)=>{
         res.statusCode = 200;
@@ -57,6 +58,7 @@ router.route('/countries')
 });
 
 
+// working with roles table
 router.route('/roles')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
@@ -83,6 +85,55 @@ router.route('/roles')
     res.statusCode = 403;
     res.setHeader('Content-Type', 'application/json');
     res.json({success: false, status: 'cannot delete a user role'});
+});
+
+
+// working with subjects table
+router.route('/subjects')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
+  const query = `SELECT * FROM subjects`;
+  
+  db.read(query, req, res, (result)=>{
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({result});
+  });
+
+})
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
+    const subject = {
+        name: req.body.name,
+        description: req.body.description
+    };
+    const query = `INSERT INTO subjects(name, description) 
+    VALUES(${subject.name}, ${subject.description})`;
+    
+    db.create(query, req, res, (result)=>{
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: true, subjectData: result, status: 'inserted'});
+    });
+})
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res, next) => {
+    const subject = {
+        id: req.body.subjectId,
+        name: req.body.name,
+        description: req.body.description
+    };
+    const query = `UPDATE countries SET name=${subject.name}, description=${subject.description} 
+    WHERE id='${subject.id}' LIMIT 1`;
+    
+    db.update(query, req, res, (result)=>{
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: true, subjectData: result, status: `${subject.id} updated`});
+    });
+})
+.delete(cors.corsWithOptions, (req, res, next) => {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, status: 'cannot delete a subject'});
 });
 
 

@@ -94,7 +94,7 @@ exports.create = (query, req, res, callback) => {
   })
 };
 
-exports.update = (query, req, res, callback) => {
+exports.update = (query, req, res, callback, handleError) => {
   pool.getConnection((err, connection) => {
 
     if (err) {
@@ -110,9 +110,13 @@ exports.update = (query, req, res, callback) => {
 
         //query execution error
         if (error) {
-          res.statusCode = 400;
-          res.setHeader('Content-Type', 'application/json');
-          res.json({success: false, status: error});
+          if(handleError){
+            handleError(error);
+          } else {
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({success: false, status: error});
+          }
         }
 
         callback(results);

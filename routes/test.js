@@ -10,13 +10,12 @@ router.use(bodyParser.json());
 
 router.route('/:tableName')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
-.get(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
+.get(cors.corsWithOptions, (req, res) => {
   
-  console.log("user \n\n" + req.headers);
   db.read("SELECT * FROM " + req.params.tableName , req, res, (result)=>{
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    res.json({res: req.headers});
+    res.json({result});
   });
 
 });
