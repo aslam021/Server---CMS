@@ -1,6 +1,6 @@
 const cors = require('cors');
 
-const whitelist = ['http://localhost:3000', 'http://localhost:3001'];
+const whitelist = ['http://localhost:3000', 'http://localhost:3001', 'https://ecsuop2020.web.app'];
 
 var corsOptionsDelegate = (req, callback) => {
     var corsOptions;
