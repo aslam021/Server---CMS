@@ -45,7 +45,7 @@ router.route('/country')
 });
 
 
-router.route('/role')
+router.route('/roles')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     //admins can get any users data if they send required userId in the body

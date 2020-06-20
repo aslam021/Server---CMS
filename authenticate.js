@@ -62,53 +62,56 @@ exports.verifyUser = passport.authenticate('jwt', {session: false});
 
 exports.varifyAdmin = (req, res, next) => {
 
-  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND 
-  role_id=(SELECT id FROM roles WHERE name='Admin') LIMIT 1`;
+  const query = `SELECT name FROM roles WHERE id = (SELECT role_id FROM role_user WHERE user_id ='${req.user.id}' LIMIT 1)`;
 
   db.read(query, req, res, (result)=>{
-    next();
-  }, ()=>{
-    var err = new Error("You are not an admin to perform this operation!");
-    err.status = 403;
-    return next(err);
+    if(result[0].name === 'Admin'){
+      next();
+    } else {
+      var err = new Error("You are not an admin to perform this operation!");
+      err.status = 403;
+      return next(err);
+    }
   });
 };
 
 exports.varifyReviewer = (req, res, next) => {
 
-  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND 
-  role_id=(SELECT id FROM roles WHERE name='Reviewer') LIMIT 1`;
+  const query = `SELECT name FROM roles WHERE id = (SELECT role_id FROM role_user WHERE user_id ='${req.user.id}' LIMIT 1)`;
 
   db.read(query, req, res, (result)=>{
-    next();
-  }, ()=>{
-    var err = new Error("You are not a reviewer to perform this operation!");
-    err.status = 403;
-    return next(err);
+    if(result[0].name === 'Reviewer'){
+      next();
+    } else {
+      var err = new Error("You are not a reviewer to perform this operation!");
+      err.status = 403;
+      return next(err);
+    }
   });
 };
 
 exports.varifySuperAdmin = (req, res, next) => {
 
-  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND 
-  role_id=(SELECT id FROM roles WHERE name='SuperAdmin') LIMIT 1`;
+  const query = `SELECT name FROM roles WHERE id = (SELECT role_id FROM role_user WHERE user_id ='${req.user.id}' LIMIT 1)`;
 
   db.read(query, req, res, (result)=>{
-    next();
-  }, ()=>{
-    var err = new Error("You are not a super admin to perform this operation!");
-    err.status = 403;
-    return next(err);
+    if(result[0].name === 'SuperAdmin'){
+      next();
+    } else {
+      var err = new Error("You are not a super admin to perform this operation!");
+      err.status = 403;
+      return next(err);
+    }
   });
 };
 
 exports.isAdmin = () =>{
-  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND 
-  role_id=(SELECT id FROM roles WHERE name='Admin') LIMIT 1`;
+  const query = `SELECT name FROM roles WHERE id = (SELECT role_id FROM role_user WHERE user_id ='${req.user.id}' LIMIT 1)`;
 
   db.read(query, req, res, (result)=>{
-    return true;
-  }, ()=>{
+    if(result[0].name === 'Admin'){
+      return true;
+    }
     return false;
   }); 
 }

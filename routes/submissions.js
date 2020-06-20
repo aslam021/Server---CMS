@@ -102,3 +102,5 @@ router.route('/:submissionId')
         res.json({success: true, submissionData: result, status: 'delete request success'});
     })
 });
+
+module.exports = router;

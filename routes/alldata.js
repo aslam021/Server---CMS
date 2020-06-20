@@ -121,7 +121,7 @@ router.route('/subjects')
         name: req.body.name,
         description: req.body.description
     };
-    const query = `UPDATE countries SET name=${subject.name}, description=${subject.description} 
+    const query = `UPDATE subjects SET name=${subject.name}, description=${subject.description} 
     WHERE id='${subject.id}' LIMIT 1`;
     
     db.update(query, req, res, (result)=>{
