@@ -9,6 +9,7 @@ const bodyParser = require('body-parser')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var create_tables = require('./database/create_tables');
+const test = require('./routes/test');
 const conference = require('./routes/conference');
 const coupens = require('./routes/coupon_codes');
 const tickets = require('./routes/tickets');
@@ -38,6 +39,7 @@ app.use(passport.initialize());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/test', test);
 app.use('/conference', conference);
 app.use('/coupens', coupens);
 app.use('/tickets', tickets);
