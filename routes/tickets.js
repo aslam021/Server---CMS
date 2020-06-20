@@ -24,11 +24,12 @@ router.route('/')
 .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     const ticket = {
         conferenceId: req.body.conferenceId,
+        coupon_code: req.body.coupon_code,
         type: req.body.type,
         price: req.body.price
     };
-    const query = `INSERT INTO tickets(user_id, conference_id, type, price)
-    VALUES(${req.user.id}, ${ticket.conferenceId}, ${ticket.type}, ${ticket.price})`;
+    const query = `INSERT INTO tickets(user_id, conference_id, coupon_code, type, price)
+    VALUES(${req.user.id}, ${ticket.conferenceId}, ${ticket.coupon_code}, ${ticket.type}, ${ticket.price})`;
 
     db.create(query, req, res, (result)=>{
         res.statusCode = 200;
@@ -63,10 +64,11 @@ router.route('/:ticketId')
 .put(cors.corsWithOptions, (req, res, next) => {
     const ticket = {
         conferenceId: req.body.conferenceId,
+        coupon_code: req.body.coupon_code,
         type: req.body.type,
         price: req.body.price
     };
-    const query = `UPDATE tickets SET type=${ticket.type}, price=${ticket.price} 
+    const query = `UPDATE tickets SET coupon_code=${ticket.coupon_code}, type=${ticket.type}, price=${ticket.price} 
     WHERE id = '${req.params.ticketId}' AND conference_id = '${conferenceId}' AND user_id='${req.user.id}' LIMIT 1`;
 
     db.update(query, req, res, (result)=>{

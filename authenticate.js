@@ -62,7 +62,8 @@ exports.verifyUser = passport.authenticate('jwt', {session: false});
 
 exports.varifyAdmin = (req, res, next) => {
 
-  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND role_id='3' LIMIT 1`;
+  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND 
+  role_id=(SELECT id FROM roles WHERE name='Admin') LIMIT 1`;
 
   db.read(query, req, res, (result)=>{
     next();
@@ -75,7 +76,8 @@ exports.varifyAdmin = (req, res, next) => {
 
 exports.varifyReviewer = (req, res, next) => {
 
-  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND role_id='2' LIMIT 1`;
+  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND 
+  role_id=(SELECT id FROM roles WHERE name='Reviewer') LIMIT 1`;
 
   db.read(query, req, res, (result)=>{
     next();
@@ -88,7 +90,8 @@ exports.varifyReviewer = (req, res, next) => {
 
 exports.varifySuperAdmin = (req, res, next) => {
 
-  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND role_id='4' LIMIT 1`;
+  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND 
+  role_id=(SELECT id FROM roles WHERE name='SuperAdmin') LIMIT 1`;
 
   db.read(query, req, res, (result)=>{
     next();
@@ -100,7 +103,8 @@ exports.varifySuperAdmin = (req, res, next) => {
 };
 
 exports.isAdmin = () =>{
-  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND role_id='3' LIMIT 1`;
+  const query = `SELECT * FROM role_user WHERE user_id ='${req.user.id}' AND 
+  role_id=(SELECT id FROM roles WHERE name='Admin') LIMIT 1`;
 
   db.read(query, req, res, (result)=>{
     return true;

@@ -137,4 +137,103 @@ router.route('/subjects')
 });
 
 
+// working with review_scores table
+router.route('/review_scores')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
+  const query = `SELECT * FROM review_scores`;
+  
+  db.read(query, req, res, (result)=>{
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({result});
+  });
+
+})
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyReviewer, (req, res) => {
+    const score = {
+        submission_id: req.body.submission_id,
+        completeness: req.body.completeness,
+        subject_knowledge: req.body.subject_knowledge,
+        comments: req.body.comments
+    };
+    const query = `INSERT INTO review_scores(submission_id, completeness, subject_knowledge, comments) 
+    VALUES(${score.submission_id}, ${score.completeness}, ${score.subject_knowledge}, ${score.comments})`;
+    
+    db.create(query, req, res, (result)=>{
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: true, scoreData: result, status: 'inserted'});
+    });
+})
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyReviewer, (req, res, next) => {
+    const score = {
+        submission_id: req.body.submission_id,
+        completeness: req.body.completeness,
+        subject_knowledge: req.body.subject_knowledge,
+        comments: req.body.comments
+    };
+
+    const query = `UPDATE review_scores SET completeness=${score.completeness}, subject_knowledge=${score.subject_knowledge}, comments=${score.comments}
+    WHERE submission_id='${score.submission_id}' LIMIT 1`;
+    
+    db.update(query, req, res, (result)=>{
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: true, scoreData: result, status: `updated`});
+    });
+})
+.delete(cors.corsWithOptions, (req, res, next) => {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, status: 'this operation not supported here'});
+});
+
+
+router.route('/review_scores/:submissionId')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
+  const query = `SELECT * FROM review_scores WHERE submission_id=${req.params.submissionId}`;
+  
+  db.read(query, req, res, (result)=>{
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({result});
+  });
+
+})
+.post(cors.corsWithOptions, (req, res) => {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, status: 'this operation not supported here'});
+})
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyReviewer, (req, res, next) => {
+    const score = {
+        submission_id: req.params.submissionId,
+        completeness: req.body.completeness,
+        subject_knowledge: req.body.subject_knowledge,
+        comments: req.body.comments
+    };
+
+    const query = `UPDATE review_scores SET completeness=${score.completeness}, subject_knowledge=${score.subject_knowledge}, comments=${score.comments}
+    WHERE submission_id='${score.submission_id}' LIMIT 1`;
+    
+    db.update(query, req, res, (result)=>{
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: true, scoreData: result, status: `updated`});
+    });
+})
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res, next) => {
+    const query = `DELETE FROM review_scores 
+    WHERE submission_id = '${req.params.submissionId}' LIMIT 1`;
+
+    db.delete(query, req, res, (result)=>{
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: true, ticketData: result, status: 'ticket deleted'});
+    });
+});
+
+
 module.exports = router;
