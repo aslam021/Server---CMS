@@ -64,6 +64,7 @@ router.route('/login')
     console.log(user);
     if(user[0].password === password ){
 
+      delete user[0].password;
       const token = authenticate.getToken({_email: user[0].email});
 
       res.statusCode = 200;
