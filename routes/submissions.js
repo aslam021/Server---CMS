@@ -60,36 +60,55 @@ router.route('/:submissionId')
     const submission = {
         subject_id: req.body.subject_id,
         title: req.body.title,
-        co_authors: req.body.co_authors,
-        file: req.body.path
+        co_authors: req.body.co_authors
     };
-    const query = `UPDATE submissions SET subject_id=${submission.subject_id}, 
-    title=${submission.title}, co_authors=${submission.co_authors}, file=${submission.filename}
-    WHERE id=${req.params.submissionId} AND user_id=${req.user.id}`;
 
-    db.update(query, req, res, (result)=>{
-        res.statusCode = 200;
+    if(!submission.co_authors){
+        submission.co_authors = null;
+    }
+
+    if (submission.subject_id == null || submission.title == null){
+        res.statusCode = 400;
         res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, submissionData: result, status: 'submission updated'});
-    }, (error)=>{
-        res.statusCode = 403;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: false, submissionData: error, 
-            status: `You may not the author of this submission or there are no submission in the id ${req.params.submissionId}`});
-    })
+        res.json({success: false, status: 'Please do request with subject_id, title values'});
+    } 
+    else {
+        const query = `UPDATE submissions SET subject_id=${submission.subject_id}, 
+        title='${submission.title}', co_authors=${submission.co_authors}
+        WHERE id=${req.params.submissionId} AND user_id=${req.user.id}`;
+
+        db.update(query, req, res, (result)=>{
+            res.setHeader('Content-Type', 'application/json');
+            if(result.affectedRows == 0){
+                res.statusCode = 403;
+                res.json({success: false, submissionData: result, 
+                    status: `You may not the author of this submission or there are no submission in the id ${req.params.submissionId}`});
+            } else {
+                res.statusCode = 200;
+                res.json({success: true, submissionData: result, status: 'submission updated'});
+            }
+        })
+    }
 })
 .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
     let query = `DELETE FROM submissions WHERE id=${req.params.submissionId} AND user_id=${req.user.id}`
 
     //admin can delete any submission
-    if(authenticate.isAdmin){
-        query = `DELETE FROM submissions WHERE id=${req.params.submissionId}`
-    }
+    // if(authenticate.isAdmin()){
+    //     query = `DELETE FROM submissions WHERE id=${req.params.submissionId}`
+    // }
 
     db.delete(query, req, res, (result)=>{
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, submissionData: result, status: 'delete request success'});
+
+        if(result.affectedRows == 0 ){
+            res.statusCode = 403;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({success: false, status: "You need admin privilages to delete others' submissions"});
+        } else {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({success: true, submissionData: result, status: 'delete request success'});
+        }
     })
 });
 
