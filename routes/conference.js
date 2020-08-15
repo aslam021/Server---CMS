@@ -56,6 +56,18 @@ router.route('/')
     res.json({success: false, conferenceData: null, status: 'to delete use conference/confId end point'});
 });
 
+router.route('/latest')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, (req, res, next) => {
+
+    const query = `SELECT id, date FROM conferences ORDER BY (date) DESC`;
+
+    db.read(query, req, res, (data) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: true, conferenceData: data, status: 'Conference details are sorted by date'});
+    });
+})
 
 router.route('/:confId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
