@@ -34,7 +34,8 @@ router.route('/')
     res.statusCode = 403;
     res.end('GET operation not supported here');
 })
-.post(cors.corsWithOptions, authenticate.verifyUser, upload.single('submissionFile'), (req, res) => {
+.post(cors.corsWithOptions, upload.single('submissionFile'), (req, res) => {
+// .post(cors.corsWithOptions, authenticate.verifyUser, upload.single('submissionFile'), (req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.json(req.file);
