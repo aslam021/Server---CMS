@@ -1,13 +1,20 @@
 const mysql = require('mysql');
 
+// const pool  = mysql.createPool({
+//   connectionLimit : 10,
+//   host            : 'localhost',
+//   user            : 'root',
+//   password        : '',
+//   database        : 'cms'
+// });
+
 const pool  = mysql.createPool({
   connectionLimit : 10,
-  host            : 'localhost',
-  user            : 'root',
-  password        : '',
+  host            : 'database-1.cbt08pr7bn4y.us-east-1.rds.amazonaws.com',
+  user            : 'admin',
+  password        : 'abc123$$',
   database        : 'cms'
 });
-
 
 exports.pool = pool;
 
