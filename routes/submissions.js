@@ -9,10 +9,13 @@ const authenticate = require('../authenticate');
 router.use(bodyParser.json());
 
 
-router.route('/')
+router.route('/conference/:confId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, (req, res) => {
-    const query = `SELECT * FROM submissions`;
+    //this will return all submission for this conference.
+    const confId = req.params.confId;
+    
+    const query = `SELECT * FROM submissions WHERE id BETWEEN ${(confId-1)*50+1} AND ${confId*50}`;
 
     db.read(query, req, res, (submissions) => {
         res.statusCode = 200;

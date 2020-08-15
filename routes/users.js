@@ -18,7 +18,7 @@ router.route('/signup')
     last_name: req.body.last_name,
     email: req.body.email,
     password: req.body.password,
-    // country_code: req.body.country_code
+    country_code: req.body.country_code
   }
   if (userData.country_code==null) 
     userData.country_code = 'AS';
@@ -61,7 +61,7 @@ router.route('/login')
   INNER JOIN roles ON temp.role_id = roles.id`;
 
   db.read(query , req, res, (user) => {
-    console.log(user);
+    console.log(user[0]);
     if(user[0].password === password ){
 
       delete user[0].password;
