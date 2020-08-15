@@ -4,6 +4,7 @@ const multer = require('multer');
 
 const authenticate = require('../authenticate');
 const cors = require('./cors');
+const db = require('../database/db');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -34,11 +35,31 @@ router.route('/')
     res.statusCode = 403;
     res.end('GET operation not supported here');
 })
-.post(cors.corsWithOptions, upload.single('submissionFile'), (req, res) => {
-// .post(cors.corsWithOptions, authenticate.verifyUser, upload.single('submissionFile'), (req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.json(req.file);
+.post(cors.corsWithOptions, authenticate.verifyUser, upload.single('submissionFile'), (req, res) => {
+
+    if(req.file != null){
+        const submission = {
+            subject_id: req.body.subject_id,
+            title: req.body.title,
+            co_authors: null,
+            status: "pending",
+            file: "submissions/" + req.file.filename
+        };
+    
+        const query = `INSERT INTO submissions(user_id, subject_id, title, co_authors, status, file)
+        VALUES(${req.user.id}, ${submission.subject_id}, '${submission.title}', ${submission.co_authors}, '${submission.status}', '${submission.file}')`;
+    
+        db.create(query, req, res, (result)=>{
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({success: true, fileData: req.file, submissionData: result, status: 'inserted'});
+        })
+    } 
+    else {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: false, submissionData: null, status: 'upload failed'});
+    }
 })
 .put(cors.corsWithOptions, (req, res, next) => {
     res.statusCode = 403;

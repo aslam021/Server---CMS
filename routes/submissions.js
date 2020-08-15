@@ -24,22 +24,9 @@ router.route('/conference/:confId')
     });
 })
 .post(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
-    const submission = {
-        subject_id: req.body.subject_id,
-        title: req.body.title,
-        co_authors: req.body.co_authors,
-        status: `pending`,
-        file: req.body.path
-    };
-
-    const query = `INSERT INTO submissions(user_id, subject_id, title, co_authors, status, file)
-    VALUES(${req.user.id}, ${submission.subject_id}, ${submission.title}, ${submission.co_authors}, ${submission.status}, ${submission.file})`;
-
-    db.create(query, req, res, (result)=>{
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, submissionData: result, status: 'inserted'});
-    })
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, submissionData: null, status: 'to upload a file use API: /uploadFile'});
 })
 .put(cors.corsWithOptions, (req, res) => {
     res.statusCode = 403;
