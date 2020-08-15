@@ -27,7 +27,7 @@ router.route('/signup')
 
   db.read(query, req, res, (result)=>{
     
-    res.statusCode = 400;
+    res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.json({success: false, token: null, status: userData.email + ' has already registerd!'});
   
@@ -45,6 +45,23 @@ router.route('/signup')
     
     });
   });
+})
+// for test automation purpose only
+.delete((req, res, next) => {
+  const email = req.body.email;
+  if(process.env.NODE_ENV === 'test'){
+    const query = `DELETE FROM users WHERE email='${email}' LIMIT 1`;
+    db.delete(query, req, res, (result)=>{
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json({success: true});
+    });
+  }
+  else {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, status:"This operation can not be performed"});
+  }
 });
 
 
@@ -61,9 +78,8 @@ router.route('/login')
   INNER JOIN roles ON temp.role_id = roles.id`;
 
   db.read(query , req, res, (user) => {
-    console.log(user[0]);
-    if(user[0].password === password ){
 
+    if(user[0].password === password ){
       delete user[0].password;
       const token = authenticate.getToken({_email: user[0].email});
 
@@ -72,12 +88,12 @@ router.route('/login')
       res.json({success: true, token: token, details: user[0], status: 'You are successfully logged in!'});
     }
     else{
-      res.statusCode = 403;
+      res.statusCode = 401;
       res.setHeader('Content-Type', 'application/json');
       res.json({success: false, token: null, status: 'Email or password invalid!'});
     }
   }, ()=>{
-      res.statusCode = 403;
+      res.statusCode = 401;
       res.setHeader('Content-Type', 'application/json');
       res.json({success: false, token: null, status: 'Email or password invalid!'});
   });
