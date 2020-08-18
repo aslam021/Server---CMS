@@ -16,8 +16,8 @@ let insertId;
 
 describe('POST /tickets', ()=>{
 
-    //all tickets bought only by this user for only this conference should be returned
-    it('OK, all tickets returned for a particular user for a particular conference', (done)=>{
+    //adding/buying a new ticket
+    it('OK, ticket added', (done)=>{
         request(app).post('/users/login')
         .send({email:test_mail, password:test_password})
         .then((res) => {

@@ -13,7 +13,7 @@ router.route('/')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     const conferenceId = req.body.conferenceId;
-    const query = `SELECT * FROM coupen_codes WHERE conference_id = '${conferenceId}'`;
+    const query = `SELECT * FROM coupon_codes WHERE conference_id = '${conferenceId}'`;
 
     db.read(query, req, res, (result)=>{
         res.statusCode = 200;
@@ -28,8 +28,8 @@ router.route('/')
         coupen_code: req.body.coupen_code,
         discount: req.body.discount
     };
-    const query = `INSERT INTO coupen_codes(conference_id, vendor, coupon_code, discount)
-    VALUES(${coupen.conferenceId}, ${coupen.vendor}, ${coupen.coupen_code}, ${coupen.discount})`;
+    const query = `INSERT INTO coupon_codes(conference_id, vendor, coupon_code, discount)
+    VALUES(${coupen.conferenceId}, '${coupen.vendor}', '${coupen.coupen_code}', ${coupen.discount})`;
 
     db.create(query, req, res, (result)=>{
         res.statusCode = 200;
@@ -44,8 +44,8 @@ router.route('/')
         coupen_code: req.body.coupen_code,
         discount: req.body.discount
     };
-    const query = `UPDATE coupen_codes SET vendor=${coupen.vendor}, discount=${coupen.discount} 
-    WHERE conference_id = '${coupen.conferenceId}' AND coupen_code='${coupen.coupen_code}'`;
+    const query = `UPDATE coupon_codes SET vendor='${coupen.vendor}', discount=${coupen.discount} 
+    WHERE conference_id = '${coupen.conferenceId}' AND coupon_code='${coupen.coupen_code}'`;
 
     db.update(query, req, res, (result)=>{
         res.statusCode = 200;
@@ -58,8 +58,8 @@ router.route('/')
         conferenceId: req.body.conferenceId,
         coupen_code: req.body.coupen_code
     };
-    const query = `DELETE FROM coupen_codes 
-    WHERE conference_id = '${coupen.conferenceId}' AND coupen_code='${coupen.coupen_code}' LIMIT 1`;
+    const query = `DELETE FROM coupon_codes 
+    WHERE conference_id = '${coupen.conferenceId}' AND coupon_code='${coupen.coupen_code}' LIMIT 1`;
 
     db.update(query, req, res, (result)=>{
         res.statusCode = 200;
