@@ -61,15 +61,16 @@ router.route('/:ticketId')
     res.setHeader('Content-Type', 'application/json');
     res.json({success: false, ticketData: null, status: 'use /tickets'});
 })
-.put(cors.corsWithOptions, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     const ticket = {
         conferenceId: req.body.conferenceId,
         coupon_code: req.body.coupon_code,
         type: req.body.type,
         price: req.body.price
     };
+
     const query = `UPDATE tickets SET coupon_code=${ticket.coupon_code}, type=${ticket.type}, price=${ticket.price} 
-    WHERE id = '${req.params.ticketId}' AND conference_id = '${conferenceId}' AND user_id='${req.user.id}' LIMIT 1`;
+    WHERE id = '${req.params.ticketId}' AND conference_id = '${ticket.conferenceId}' AND user_id='${req.user.id}' LIMIT 1`;
 
     db.update(query, req, res, (result)=>{
         res.statusCode = 200;
