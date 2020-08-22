@@ -12,9 +12,9 @@ router.route('/')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
     //this user's submission
-    const id = req.user.id;
+    const user_id = req.user.id;
     
-    const query = `SELECT * FROM submissions WHERE id='${id}'`;
+    const query = `SELECT * FROM submissions WHERE user_id='${user_id}'`;
 
     db.read(query, req, res, (submissions) => {
         res.statusCode = 200;
