@@ -8,6 +8,35 @@ const authenticate = require('../authenticate');
 
 router.use(bodyParser.json());
 
+router.route('/')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
+    //this user's submission
+    const id = req.user.id;
+    
+    const query = `SELECT * FROM submissions WHERE id='${id}'`;
+
+    db.read(query, req, res, (submissions) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({submissions});
+    });
+})
+.post(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, submissionData: null, status: 'to upload a file use API: /uploadFile'});
+})
+.put(cors.corsWithOptions, (req, res) => {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, submissionData: null, status: 'put operation is not supported here'});
+})
+.delete(cors.corsWithOptions, (req, res) => {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, submissionData: null, status: 'cannot delete all submissions'});
+});
 
 router.route('/conference/:confId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })

@@ -35,7 +35,7 @@ describe('POST /users/login', ()=>{
         .catch(err => done(err));
     })
 
-    //password invalid
+    //unregitered email
     it('Fail, email have not registred', (done)=>{
         request(app).post('/users/login')
         .send({email:"tgdbsjsibqww732e65211@scb.ujk", password:test_password})
