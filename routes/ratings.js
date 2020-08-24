@@ -9,7 +9,7 @@ const db = require('../database/db');
 router.use(bodyParser.json());
 
 
-router.route('/:subId')
+router.route('/:subID')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     const submissionId = req.params.subId;
