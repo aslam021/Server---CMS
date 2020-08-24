@@ -37,7 +37,7 @@ router.route('/:subId')
         res.json({success: true, rating: rating, status: 'coupen codes'});
     });
 })
-.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     const submissionId = req.params.subId;
     const rating = {
         completeness: req.body.completeness,
