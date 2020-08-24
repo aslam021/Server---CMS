@@ -47,7 +47,7 @@ router.route('/latest')
     db.read(query, req, res, (data) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, conferenceData: data, status: 'Conference details are sorted by date'});
+        res.json({success: true, result: data, status: 'Conference details are sorted by date'});
     });
 })
 
