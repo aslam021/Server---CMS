@@ -13,11 +13,10 @@ router.route('/users')
 .get(cors.corsWithOptions, (req, res) => {
   
   const query = `SELECT temp.id, temp.first_name, temp.last_name, temp.email, temp.password, temp.country_code, roles.name AS user_role FROM 
-  (SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.country_code, role_user.role_id 
-    FROM users INNER JOIN role_user ON users.id = role_user.user_id) AS temp 
+  (SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.country_code, role_user.role_id FROM users INNER JOIN role_user ON users.id = role_user.user_id) AS temp 
   INNER JOIN roles ON temp.role_id = roles.id`;
 
-  db.read(query + req.params.tableName , req, res, (result)=>{
+  db.read(query, req, res, (result)=>{
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.json({result});
