@@ -17,6 +17,7 @@ const userData = require('./routes/userdata');
 const allData = require('./routes/alldata');
 const uploadFile = require('./routes/uploadRouter');
 const submissions = require('./routes/submissions');
+const ratings = require('./routes/ratings');
 
 var app = express();
 
@@ -48,6 +49,7 @@ app.use('/userdata', userData);
 app.use('/alldata', allData);
 app.use('/uploadfile', uploadFile);
 app.use('/submissions', submissions);
+app.use('/ratings', ratings);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
