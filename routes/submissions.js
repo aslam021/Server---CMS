@@ -85,7 +85,7 @@ router.route('/conference/:confId')
 router.route('/:submissionId')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, (req, res) => {
-    const query = `SELECT * FROM submissions WHERE id='${req.params.submissionId}'`;
+    const query = `SELECT * FROM submissions WHERE id='${req.params.submissionId}' LIMIT 1`;
 
     db.read(query, req, res, (submission) => {
         res.statusCode = 200;
@@ -117,7 +117,7 @@ router.route('/:submissionId')
     else {
         const query = `UPDATE submissions SET subject_id=${submission.subject_id}, 
         title='${submission.title}', co_authors=${submission.co_authors}
-        WHERE id=${req.params.submissionId} AND user_id=${req.user.id}`;
+        WHERE id=${req.params.submissionId} AND user_id=${req.user.id} LIMIT 1`;
 
         db.update(query, req, res, (result)=>{
             res.setHeader('Content-Type', 'application/json');
@@ -133,7 +133,7 @@ router.route('/:submissionId')
     }
 })
 .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
-    let query = `DELETE FROM submissions WHERE id=${req.params.submissionId} AND user_id=${req.user.id}`
+    let query = `DELETE FROM submissions WHERE id=${req.params.submissionId} AND user_id=${req.user.id} LIMIT 1`
 
     //admin can delete any submission
     // if(authenticate.isAdmin()){
@@ -153,5 +153,49 @@ router.route('/:submissionId')
         }
     })
 });
+
+
+//get or update submission status
+router.route('/status/:submissionId')
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.corsWithOptions, (req, res) => {
+    const query = `SELECT status FROM submissions WHERE id='${req.params.submissionId} LIMIT 1'`;
+
+    db.read(query, req, res, (submission) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({submission});
+    });
+})
+.post(cors.corsWithOptions, (req, res) => {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, status: 'post operation is not supported here'});
+})
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
+    const submissionId = req.params.submissionId;
+    const status = req.body.status;
+
+    if (status === 'rejected' || status === 'approved') {
+        const query = `UPDATE submissions SET status='${status}' WHERE id='${submissionId}' LIMIT 1` 
+        
+        db.update(query, req, res, (result) => {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({result});
+        });
+    }
+    else {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({success: false, status: 'allowed values for status are only rejected and approved'});
+    }
+})
+.delete(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: false, status: 'delete operation is not supported here'});
+});
+
 
 module.exports = router;
