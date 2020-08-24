@@ -73,14 +73,14 @@ router.route('/roles')
         res.json({success: true, role: role, status: 'role added'});
     });
 })
-.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     const roleUser = {
         userId: req.body.userId,
         role: req.body.role
     };
     
     const query = `UPDATE role_user SET role_id=(SELECT id FROM roles WHERE name='${roleUser.role}' LIMIT 1) 
-    WHERE user_id='${roleUser.roleId}'`;
+    WHERE user_id='${roleUser.userId}'`;
     
     db.update(query, req, res, (role)=>{
         res.statusCode = 200;
