@@ -172,7 +172,7 @@ router.route('/status/:submissionId')
     res.setHeader('Content-Type', 'application/json');
     res.json({success: false, status: 'post operation is not supported here'});
 })
-.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
     const submissionId = req.params.submissionId;
     const status = req.body.status;
 
