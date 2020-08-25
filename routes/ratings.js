@@ -38,15 +38,16 @@ router.route('/:subID')
     });
 })
 .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    const submissionId = req.params.subId;
+    const submissionId = req.params.subID;
+    
     const rating = {
         completeness: req.body.completeness,
         subject_knowledge: req.body.subject_knowledge,
         comments: req.body.comments
     };
 
-    const query = `INSERT INTO review_scores(submission_id, completeness, subject_knowledgem, comments)
-    VALUES(${submissionId}, '${rating.completeness}', '${rating.subject_knowledge}', ${rating.comments})`;
+    const query = `INSERT INTO review_scores(submission_id, completeness, subject_knowledge, comments)
+    VALUES(${submissionId}, ${rating.completeness}, ${rating.subject_knowledge}, '${rating.comments}')`;
 
     db.create(query, req, res, (result)=>{
         res.statusCode = 200;
@@ -63,7 +64,7 @@ router.route('/:subID')
         comments: req.body.comments
     };
 
-    const query = `UPDATE review_scores SET completeness='${rating.completeness}', subject_knowledgem='${rating.subject_knowledge}',
+    const query = `UPDATE review_scores SET completeness=${rating.completeness}, subject_knowledge=${rating.subject_knowledge},
     comments='${rating.comments}' WHERE id = '${rating.id}' AND submission_id='${submissionId}'`;
 
     db.update(query, req, res, (result)=>{
