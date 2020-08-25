@@ -12,7 +12,7 @@ router.use(bodyParser.json());
 router.route('/:subID')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    const submissionId = req.params.subId;
+    const submissionId = req.params.subID;
     const query = `SELECT * FROM review_scores WHERE submission_id = '${submissionId}'`;
 
     db.read(query, req, res, (result)=>{
@@ -56,7 +56,7 @@ router.route('/:subID')
     });
 })
 .put(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res, next) => {
-    const submissionId = req.params.subId;
+    const submissionId = req.params.subID;
     const rating = {
         id: req.body.ratingId,
         completeness: req.body.completeness,
@@ -74,7 +74,7 @@ router.route('/:subID')
     });
 })
 .delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res, next) => {
-    const submissionId = req.params.subId;
+    const submissionId = req.params.subID;
     const rating = {
         id: req.body.ratingId
     };
