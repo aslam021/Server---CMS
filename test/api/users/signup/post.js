@@ -48,16 +48,4 @@ describe('POST /users/signup', ()=>{
         })
         .catch(err => done(err));
     })
-
-    //invalid email or unsuitable password
-    // it('Fail, registering a new user should not work', (done)=>{
-    //     request(app).post('/users/signup')
-    //     .send({email:"aslam@gmail.com", password:"abcd"})
-    //     .then((res) => {
-    //         const body = res.body;
-    //         expect(body.errors).to.equal('error');
-    //         done();
-    //     })
-    //     .catch(err => done(err));
-    // })
 });
