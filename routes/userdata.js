@@ -113,7 +113,7 @@ router.route('/users/:userId')
 
 router.route('/name/:userName')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
-.get(cors.corsWithOptions, authenticate.verifyUser, authenticate.varifyAdmin, (req, res) => {
+.get(cors.corsWithOptions, authenticate.verifyUser, (req, res) => {
     const userName = req.params.userName;
     const query = `SELECT temp.id, temp.first_name, temp.last_name, temp.email, temp.password, temp.country_code, roles.name AS user_role FROM 
     (SELECT users.id, users.first_name, users.last_name, users.email, users.password, users.country_code, role_user.role_id FROM users INNER JOIN role_user ON users.id = role_user.user_id WHERE lower(users.first_name)='${userName}' OR lower(users.last_name)='${userName}') AS temp 

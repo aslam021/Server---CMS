@@ -28,13 +28,20 @@ router.route('/')
         type: req.body.type,
         price: req.body.price
     };
-    const query = `INSERT INTO tickets(user_id, conference_id, coupon_code, type, price)
-    VALUES(${req.user.id}, ${ticket.conferenceId}, ${ticket.coupon_code}, ${ticket.type}, ${ticket.price})`;
 
-    db.create(query, req, res, (result)=>{
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({success: true, ticketData: result, status: 'ticket added'});
+    const query1 = 'START TRANSACTION';
+    const query2 = `INSERT INTO tickets(user_id, conference_id, coupon_code, type, price)
+    VALUES(${req.user.id}, ${ticket.conferenceId}, ${ticket.coupon_code}, ${ticket.type}, ${ticket.price})`;
+    const query3 = 'COMMIT';
+
+    db.create(query1, req, res, ()=>{
+        db.create(query2, req, res, ()=>{
+            db.create(query3, req, res, ()=>{
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({success: true, status: 'ticket added'});
+            })
+        })
     });
 })
 .put(cors.corsWithOptions, (req, res, next) => {
